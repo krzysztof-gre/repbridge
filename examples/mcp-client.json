@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "repbridge": {
+      "command": "docker",
+      "args": [
+        "compose",
+        "--project-directory",
+        "/absolute/path/to/repbridge",
+        "-f",
+        "/absolute/path/to/repbridge/compose.quickstart.yaml",
+        "run",
+        "--rm",
+        "--no-deps",
+        "-T",
+        "mcp"
+      ]
+    }
+  }
+}

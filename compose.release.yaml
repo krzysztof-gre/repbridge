@@ -1,0 +1,31 @@
+name: repbridge-release
+services:
+  release:
+    image: repbridge:release-tools
+    build:
+      context: .
+      target: release-tools
+    working_dir: /src
+    volumes:
+      - .:/src
+      - go-modules:/go/pkg/mod
+      - go-build:/root/.cache/go-build
+    environment:
+      GOTOOLCHAIN: local
+      GOMAXPROCS: "2"
+      GOFLAGS: -p=2
+      DOCKER_CONFIG: /tmp/docker-config
+    command: [check]
+  snapshot:
+    extends:
+      service: release
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  publisher:
+    extends:
+      service: snapshot
+    environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+volumes:
+  go-modules:
+  go-build:

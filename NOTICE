@@ -1,0 +1,15 @@
+RepBridge
+Copyright 2026 RepBridge contributors
+
+RepBridge is an independent project, not affiliated with or endorsed by Garmin
+or OpenAI. Garmin, Garmin Connect, ChatGPT and other product names belong to
+their respective owners. This project's license grants no trademark rights.
+
+Garmin API models, workout handlers, exercise catalogue and token refresh are
+provided by ndeloof/go-garmin, licensed under Apache License 2.0:
+https://github.com/ndeloof/go-garmin
+
+MCP uses modelcontextprotocol/go-sdk; the optional private OpenAI tunnel uses
+openai/tunnel-client. Dependencies retain their own licenses and notices.
+Container distributions include dependency license texts and a module inventory
+under /usr/share/licenses/repbridge/. See THIRD_PARTY_NOTICES.md.

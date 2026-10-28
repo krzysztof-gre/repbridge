@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+
+      - name: Run CI checks and build the Docker image
+        run: make ci
+
+      - name: Exercise GoReleaser packaging without publishing
+        run: make release-package
+
+      - name: Exercise JSON and policy fuzz targets
+        run: make fuzz
+
+      - name: Check runtime setup with disposable keys and no network
+        run: >-
+          docker run --rm --network none --read-only --cap-drop ALL
+          --security-opt no-new-privileges:true
+          --tmpfs /config:uid=65532,gid=65532,mode=0700
+          --tmpfs /data:uid=65532,gid=65532,mode=0700
+          -e REPBRIDGE_VAULT_KEY_FILE=/config/vault.key
+          -v "$PWD/scripts/smoke.sh:/run/smoke.sh:ro"
+          --entrypoint /bin/sh repbridge:local /run/smoke.sh
+
+      - name: Scan the built image for known vulnerabilities
+        run: >-
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock
+          aquasec/trivy:0.76.1@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c
+          image --quiet --db-repository ghcr.io/aquasecurity/trivy-db:2
+          --scanners vuln --exit-code 1 --severity HIGH,CRITICAL repbridge:local

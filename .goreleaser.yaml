@@ -1,0 +1,73 @@
+version: 2
+project_name: repbridge
+builds:
+  - id: repbridge
+    main: ./cmd/repbridge
+    binary: repbridge
+    env: [CGO_ENABLED=0]
+    goos: [linux]
+    goarch: [amd64, arm64]
+    hooks:
+      post:
+        - cmd: sh scripts/collect-licenses.sh dist/licenses_{{ .Arch }}
+    flags: [-trimpath]
+    ldflags:
+      - -s -w -X github.com/krzysztof-gre/repbridge/internal/buildinfo.Version={{ .Version }}
+archives:
+  - formats: [tar.gz]
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+    files:
+      - LICENSE
+      - NOTICE
+      - THIRD_PARTY_NOTICES.md
+      - src: dist/licenses_{{ .Arch }}
+        dst: licenses
+        strip_parent: false
+source:
+  enabled: true
+  name_template: '{{ .ProjectName }}_{{ .Version }}_source'
+  prefix_template: '{{ .ProjectName }}-{{ .Version }}/'
+checksum:
+  name_template: SHA256SUMS
+changelog:
+  sort: asc
+  filters:
+    exclude: ['^test:', '^chore:']
+release:
+  github:
+    owner: krzysztof-gre
+    name: repbridge
+  draft: true
+  prerelease: auto
+  replace_existing_draft: false
+dockers_v2:
+  - id: runtime
+    dockerfile: Dockerfile.release
+    images: [ghcr.io/krzysztof-gre/repbridge]
+    tags: ['v{{ .Version }}']
+    platforms: [linux/amd64, linux/arm64]
+    extra_files:
+      - LICENSE
+      - NOTICE
+      - scripts/setup.sh
+      - dist/licenses_amd64
+      - dist/licenses_arm64
+    labels:
+      org.opencontainers.image.title: RepBridge
+      org.opencontainers.image.licenses: Apache-2.0
+      org.opencontainers.image.source: https://github.com/krzysztof-gre/repbridge
+      org.opencontainers.image.revision: '{{ .FullCommit }}'
+      org.opencontainers.image.version: '{{ .Version }}'
+    # Classic Docker stores cannot load image attestations. Keep them for
+    # registry publication, where the container driver supports OCI indexes.
+    sbom: '{{ not .IsSnapshot }}'
+    flags: ['--provenance={{ if .IsSnapshot }}false{{ else }}mode=min{{ end }}']
+    hooks:
+      post:
+        - cmd: >-
+            sh -ec 'test "{{ .IsSnapshot }}" != true || docker run --rm -v /var/run/docker.sock:/var/run/docker.sock
+            aquasec/trivy:0.76.1@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c
+            image --quiet --db-repository ghcr.io/aquasecurity/trivy-db:2
+            --scanners vuln --exit-code 1 --severity HIGH,CRITICAL
+            "{{ index .Images 0 }}"'
+          output: true
