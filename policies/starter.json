@@ -1,0 +1,127 @@
+{
+  "Version": "2026-10-20",
+  "Statement": [
+    {
+      "Sid": "LocalDiscovery",
+      "Effect": "Allow",
+      "Action": [
+        "repbridge:get_permissions",
+        "repbridge:get_workout_schema",
+        "repbridge:search_exercises",
+        "repbridge:garmin_session_status"
+      ],
+      "Resource": "*",
+      "Fields": [
+        "*"
+      ]
+    },
+    {
+      "Sid": "DenyAllOtherWrites",
+      "Effect": "Deny",
+      "Action": [
+        "garmin:create_activity",
+        "garmin:update_activity",
+        "garmin:set_hr_zones",
+        "garmin:delete_workout",
+        "garmin:delete_course",
+        "garmin:import_course_gpx",
+        "garmin:push_course_to_device",
+        "repbridge:refresh_garmin_session",
+        "garmin:execute_graphql",
+        "garmin:set_activity_type",
+        "garmin:patch_activity_summary",
+        "garmin:delete_activity",
+        "garmin:create_manual_activity",
+        "garmin:create_activity_from_payload",
+        "garmin:add_weigh_in",
+        "garmin:delete_weigh_in",
+        "garmin:delete_all_weigh_ins",
+        "garmin:add_body_composition",
+        "garmin:set_activity_exercise_sets",
+        "garmin:set_default_gear",
+        "garmin:link_gear_to_activity",
+        "garmin:unlink_gear_from_activity",
+        "garmin:add_hydration",
+        "garmin:set_blood_pressure",
+        "garmin:delete_blood_pressure",
+        "garmin:unschedule_workout",
+        "garmin:upload_activity_file",
+        "garmin:import_activity_file",
+        "garmin:request_wellness_reload",
+        "garmin:create_course",
+        "garmin:update_course",
+        "garmin:parse_course_gpx"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ReadWorkoutLibrary",
+      "Effect": "Allow",
+      "Action": [
+        "garmin:list_workouts",
+        "garmin:get_workout"
+      ],
+      "Resource": "*",
+      "Fields": [
+        "/workoutId",
+        "/workoutName",
+        "/description",
+        "/sportType",
+        "/workoutSegments"
+      ]
+    },
+    {
+      "Sid": "CreateAndEditOnlyNamedAIWorkouts",
+      "Effect": "Allow",
+      "Action": [
+        "garmin:create_workout",
+        "garmin:update_workout"
+      ],
+      "Resource": "*",
+      "Fields": [
+        "/workoutId",
+        "/workoutName"
+      ],
+      "Condition": {
+        "StringLike": {
+          "garmin:WorkoutName": [
+            "AI: *"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "ScheduleAndSendAIWorkouts",
+      "Effect": "Allow",
+      "Action": [
+        "garmin:schedule_workout",
+        "garmin:push_workout_to_device"
+      ],
+      "Resource": "*",
+      "Fields": [
+        "*"
+      ],
+      "Condition": {
+        "StringLike": {
+          "garmin:WorkoutName": [
+            "AI: *"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "SelectWorkoutDevice",
+      "Effect": "Allow",
+      "Action": [
+        "garmin:get_devices"
+      ],
+      "Resource": "*",
+      "Fields": [
+        "/deviceId",
+        "/productDisplayName",
+        "/model",
+        "/primaryTrainingCapable"
+      ]
+    }
+  ]
+}

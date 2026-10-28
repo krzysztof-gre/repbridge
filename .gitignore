@@ -1,0 +1,24 @@
+/bin/
+/dist/
+/exports/
+/coverage.out
+*.test
+.env
+.env.*
+garmin_tokens.json
+examples/.upload-*.json
+
+# Credential backups and local deployment state
+/backups/
+/runtime/
+/.repbridge/
+# Keep ignoring private state from installations before the rename.
+/.g2gc/
+*.key
+*.enc
+*.pem
+*private-backup*.tar.gz
+.DS_Store
+!.env.example
+
+/.private/

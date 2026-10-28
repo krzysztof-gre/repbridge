@@ -1,0 +1,34 @@
+{
+  "workoutName": "AI: Pull-ups",
+  "description": "Three controlled sets. Rest for the full three minutes.",
+  "sportType": {"sportTypeId": 5, "sportTypeKey": "strength_training"},
+  "workoutSegments": [{
+    "segmentOrder": 1,
+    "sportType": {"sportTypeId": 5, "sportTypeKey": "strength_training"},
+    "workoutSteps": [{
+      "type": "RepeatGroupDTO",
+      "stepOrder": 1,
+      "stepType": {"stepTypeId": 6, "stepTypeKey": "repeat"},
+      "numberOfIterations": 3,
+      "endCondition": {"conditionTypeId": 7, "conditionTypeKey": "iterations"},
+      "endConditionValue": 3,
+      "skipLastRestStep": false,
+      "smartRepeat": false,
+      "workoutSteps": [{
+        "type": "ExecutableStepDTO",
+        "stepOrder": 2,
+        "stepType": {"stepTypeId": 3, "stepTypeKey": "interval"},
+        "endCondition": {"conditionTypeId": 10, "conditionTypeKey": "reps"},
+        "endConditionValue": 4,
+        "category": "PULL_UP",
+        "exerciseName": "PULL_UP"
+      }, {
+        "type": "ExecutableStepDTO",
+        "stepOrder": 3,
+        "stepType": {"stepTypeId": 5, "stepTypeKey": "rest"},
+        "endCondition": {"conditionTypeId": 2, "conditionTypeKey": "time"},
+        "endConditionValue": 180
+      }]
+    }]
+  }]
+}

@@ -1,0 +1,44 @@
+# Project Principles
+
+## Product boundary
+
+- `repbridge` hosts the pinned `go-garmin` MCP tools in Docker behind an owner-controlled access policy, with browser sign-in and an encrypted token store. Read the permissions section of `README.md` before changing authorization or tool registration. Expose native Garmin JSON rather than maintaining another input format or converter.
+- Cover pinned domain-service methods through native upstream tools and the explicit `internal/garminops` catalogue. Reflection binds only reviewed entries; never export future methods automatically. `cmd/upstream-audit` detects missing/stale mappings, and `catalog check` validates every tool/schema without credentials or account calls. Iterator and typed aliases share bounded/native JSON operations. File tools use bounded in-memory base64, never caller-supplied host paths. Arbitrary GraphQL is always a destructive write, denied in shipped policies, and cannot inherit per-resource history/name guards.
+- Reuse upstream workout tool handlers, models, exercise catalogue and refresh implementations. Inspect the pinned upstream before adding parallel functionality. The official MCP SDK supplies tool annotations/composition and transports; the official OpenAI client supplies the optional private tunnel.
+- Support local stdio, private authenticated HTTP and the optional ChatGPT tunnel. The temporary local page exists only for Garmin sign-in; there is no persistent application frontend.
+- ChatGPT uses the `openai-gateway` Compose service independently of Codex. Use the official embedded tunnel client, a separately mounted runtime key and owner-restricted OpenAI tunnel associations. Distinguish offline configuration checks, the first successful poll and a confirmed ChatGPT tool call. Do not claim native mobile support from tunnel connectivity; verify the intended ChatGPT surface against current official documentation and the actual account.
+- Classify every tool in the action catalogue. Policy grants govern discovery, invocation, conditions and all response channels for every transport. Default deny and explicit-deny precedence are enforced in code. New upstream tools remain unavailable until explicitly classified.
+- New installations load `policies/starter.json`: selected workout reads, minimal device discovery, and creation/editing/scheduling/device delivery restricted to `AI: *` names. Activity and health reads are ungranted. `policies/default.json` has the same conservative grants; dated activity access is exercised with synthetic test fixtures. Editing checks both fetched existing and submitted names; scheduling/delivery check the fetched name. Other classified writes, including deletion and delegated refresh, remain explicitly denied. New writes start denied. Policy changes require a direct owner request and operator file edit outside MCP; caller assertions cannot supply trusted authorization attributes.
+- Keep personal activity/workout exports in the ignored, image-excluded `.private/exports/` directory, with private filesystem permissions.
+- Describe native input using schemas derived from upstream types and identifiers from its catalogue. Keep schema and catalogue helpers free of Garmin credentials.
+
+## Credentials and Garmin integration
+
+- Never ask the user to type a Garmin password into `repbridge`, a shell prompt owned by `repbridge`, an environment variable, a config file, or a test. Authentication takes place on Garmin's own sign-in page in the user's browser.
+- `auth login` prints a short-lived loopback URL; it must not launch a browser process. Bind inside the container and publish the callback port only on host loopback. The public origin and bound callback port must match.
+- Run the application through Docker Compose. Exchange only the one-time sign-in ticket and store refreshed Garmin tokens only in the app-encrypted named volume. Do not maintain a host runtime or use the host operating system credential store. Never print or log passwords, vault keys, tickets, tokens, cookies, or full authentication responses.
+- Never ask for or store the Garmin password. Generate a random 32-byte vault key inside the separate quick-start key volume, or in a private host file for legacy deployments. Keep it separate from the token volume and source repository, protect its parent directory with mode `0700`, and mount it read-only for ordinary runtime commands. Never pass key bytes through an environment variable, command argument, Compose configuration value, or image.
+- Docker's encrypted token file must use authenticated encryption, private directory/file permissions, and atomic replacement. The vault key must remain separate from the encrypted token volume. Never mount a plaintext token file or add secrets to the image.
+- Use the pinned Go Garmin client for workout API calls, token refresh, and Garmin's exercise catalogue. Keep private-API-specific authentication code small and isolated; Garmin may change these undocumented endpoints without notice.
+- Keep all ordinary tests offline and fixture-based. A real-account upload is a separately invoked manual operation, never part of CI or the default test target.
+- Classify all mutations as writes and require the MCP host to obtain user approval. Non-idempotent writes use a single network/5xx attempt; after an uncertain outcome, reconcile through permitted reads before another write. Tool annotations and confirmation booleans are not proof of human consent.
+- Rebuild every successful tool result from projected JSON. Sanitize failures; forward no upstream error bodies, metadata or unfiltered result channel. Match workout name conditions against native creation input or a fetched existing workout, never a separate caller assertion. For editing, require both existing and replacement names to pass and project the receipt through both decisions.
+- Activity date conditions use only Garmin UTC start metadata, including the summary's UTC field; never trust caller dates or naive local time. Missing, invalid or conflicting UTC metadata fails closed whenever a date condition applies. Filter list records and project fields per record. Before reading detail/set endpoints, authorize the matching activity summary under the same operation lock. New activity readers must use this shared guard.
+- Load credentials for each invocation and coordinate account calls/login replacement/logout/manual refresh through the shared operation lock, distinct from the upstream token-rotation lock. Pass the invocation context into upstream handlers and network requests.
+- Use upstream `RefreshStore` for manual and idle renewal, and its client for proactive/reactive request-time refresh. Our code owns scheduling and secret-free status/errors, not the refresh protocol or rotation transaction.
+- Keep the HTTP access key and OpenAI runtime key separate from the Garmin vault key, outside the repository and volume, mounted read-only. Public ingress requires HTTPS and an established authorization provider. The private ChatGPT path uses a restricted OpenAI tunnel.
+
+## Engineering
+
+- Use Go and the standard library first. Add dependencies only when they materially improve security or remove protocol maintenance; pin versions in `go.mod` and keep `go.sum` committed.
+- Keep custom authentication/storage behavior covered by offline fixtures. Run tests when requested; keep compilation and static analysis separate from real-account operations.
+- Keep authentication/storage, MCP adaptation and CLI startup separate. Delegate Garmin payload construction and remote requests to upstream.
+- Write technical documentation in English. Keep examples small, deterministic, and free of personal account data.
+- Use Conventional Commits for logical delivery units. For multi-step product work, track the scope in GitHub Issues/Milestones once this local project has an associated repository; do not invent a remote.
+
+## Distribution
+
+- Use RepBridge consistently: `repbridge` CLI/module/service, `REPBRIDGE_*` configuration and `repbridge:*` local policy actions. Preserve the legacy vault AAD as an immutable format identifier; document deployment migrations before changing storage identities. Release tags control published CLI/MCP metadata; source builds report `dev`. Every merge to protected main publishes through the serialized GoReleaser workflow, starting at 0.1.0. Follow the release section of `README.md` for SemVer, publication gates and immutable artifacts.
+- Run setup, development and packaging utilities inside Docker. New installations use `compose.quickstart.yaml`; preserve existing file-mounted/NAS deployments rather than silently changing credential paths.
+
+- Keep local deployment files and historical notes under ignored `.private/`. Report audit results in the conversation, not committed reports.

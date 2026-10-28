@@ -1,0 +1,72 @@
+# New installations: fully containerized setup; isolated from legacy deployments.
+name: repbridge
+x-app: &app
+  build: .
+  image: "${REPBRIDGE_IMAGE:-repbridge:local}"
+  init: true
+  read_only: true
+  user: "65532:65532"
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  pids_limit: 64
+  mem_limit: 256m
+  cpus: 1.0
+  tmpfs: ["/tmp:rw,noexec,nosuid,size=16m"]
+  environment: &environment
+    REPBRIDGE_TOKEN_FILE: /data/credentials.enc
+    REPBRIDGE_VAULT_KEY_FILE: /config/vault.key
+    REPBRIDGE_POLICY_FILE: /etc/repbridge/policies/starter.json
+  volumes:
+    - repbridge-data:/data
+    - repbridge-keys:/config:ro
+    - ./policies:/etc/repbridge/policies:ro
+services:
+  setup:
+    <<: *app
+    entrypoint: [/bin/sh, /opt/repbridge/setup.sh]
+    command: [login]
+    ports: ["127.0.0.1:8787:8787"]
+    environment:
+      <<: *environment
+      REPBRIDGE_AUTH_LISTEN_ADDRESS: 0.0.0.0:8787
+      REPBRIDGE_AUTH_PUBLIC_ORIGIN: http://127.0.0.1:8787
+    volumes:
+      - repbridge-data:/data
+      - repbridge-keys:/config
+      - ./policies:/etc/repbridge/policies:ro
+  repbridge:
+    <<: *app
+    command: [help]
+  mcp:
+    <<: *app
+    command: [mcp]
+    stdin_open: true
+    tty: false
+  init-access:
+    <<: *app
+    command: [init-access]
+    volumes:
+      - repbridge-keys:/config
+  mcp-http:
+    <<: *app
+    command: [mcp, --transport, http]
+    restart: unless-stopped
+    ports: ["127.0.0.1:8788:8080"]
+    environment:
+      <<: *environment
+      REPBRIDGE_MCP_KEY_FILE: /config/mcp.key
+  openai-gateway:
+    <<: *app
+    command: [mcp, --transport, tunnel]
+    restart: unless-stopped
+    stop_grace_period: 15s
+    environment:
+      <<: *environment
+      REPBRIDGE_OPENAI_TUNNEL_ID: "${REPBRIDGE_OPENAI_TUNNEL_ID:-}"
+      REPBRIDGE_OPENAI_API_KEY_FILE: /config/openai-runtime.key
+    logging:
+      driver: local
+      options: {max-size: "10m", max-file: "3"}
+volumes:
+  repbridge-data:
+  repbridge-keys:

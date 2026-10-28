@@ -1,0 +1,23 @@
+name: repbridge-dev
+services:
+  dev:
+    build:
+      context: .
+      target: dev
+    working_dir: /src
+    volumes:
+      - .:/src
+      - go-modules:/go/pkg/mod
+      - go-build:/root/.cache/go-build
+    environment:
+      GOTOOLCHAIN: local
+      GOMAXPROCS: "2"
+      GOFLAGS: -p=2
+  test:
+    extends:
+      service: dev
+    network_mode: none
+    command: [sh, -ec, 'exec go test -race -count=1 -timeout=120s -coverpkg=./... -coverprofile=/tmp/coverage.out ./...']
+volumes:
+  go-modules:
+  go-build:
