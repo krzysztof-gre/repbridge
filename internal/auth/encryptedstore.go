@@ -337,7 +337,7 @@ func readVaultKey(path string) ([]byte, error) {
 	key, err := secretfile.Read(path, vaultKeyBytes)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			return nil, fmt.Errorf("encrypted vault key file is missing; run `./scripts/init-vault-key.sh`")
+			return nil, fmt.Errorf("encrypted vault key file is missing; restore the original key for an existing vault; for a new installation run `docker compose -f compose.quickstart.yaml run --build --rm setup init` (see docs/operations.md#missing-vault-key)")
 		}
 		return nil, fmt.Errorf("encrypted vault key file must be private, regular and contain exactly 32 bytes")
 	}
