@@ -8,7 +8,7 @@ require (
 	github.com/invopop/jsonschema v0.14.0
 	github.com/modelcontextprotocol/go-sdk v1.8.0
 	github.com/ndeloof/go-garmin v0.0.0-20260928210949-2199400e76ba
-	github.com/openai/tunnel-client v0.0.18
+	github.com/openai/tunnel-client v0.0.19
 )
 
 require (

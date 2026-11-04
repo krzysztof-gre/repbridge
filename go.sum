@@ -73,8 +73,8 @@ github.com/ndeloof/go-garmin v0.0.0-20260928210949-2199400e76ba h1:JTdqOqmPo2NYE
 github.com/ndeloof/go-garmin v0.0.0-20260928210949-2199400e76ba/go.mod h1:/HP/kgWDaouOi/NQEYeWw0+f2wBWpaDeUpIjwzeyrTo=
 github.com/openai/openai-go/v3 v3.42.0 h1:16Skv1hpEhSm3imZpPGSeEBDUgVJJA9cHryKGGsVYI8=
 github.com/openai/openai-go/v3 v3.42.0/go.mod h1:cdufnVK14cWcT9qA1rRtrXx4FTRsgbDPW7Ia7SS5cZo=
-github.com/openai/tunnel-client v0.0.18 h1:uiHxT6KqHtUI236Sya6spG660Z7CCF5QrMAOA1xH+z0=
-github.com/openai/tunnel-client v0.0.18/go.mod h1:xF3Kd5/KN5MqEgrMmbK46lePRMZitTkAMqwhEHM7gks=
+github.com/openai/tunnel-client v0.0.19 h1:4LJy2TGlwgXDk8a0MrKE5z9TMJ7tQAHgEn5D/DFBKrE=
+github.com/openai/tunnel-client v0.0.19/go.mod h1:xF3Kd5/KN5MqEgrMmbK46lePRMZitTkAMqwhEHM7gks=
 github.com/panjf2000/ants/v2 v2.11.3 h1:AfI0ngBoXJmYOpDh9m516vjqoUu2sLrIVgppI9TZVpg=
 github.com/panjf2000/ants/v2 v2.11.3/go.mod h1:8u92CYMUc6gyvTIw8Ru7Mt7+/ESnJahz5EVtqfrilek=
 github.com/pb33f/ordered-map/v2 v2.3.1 h1:5319HDO0aw4DA4gzi+zv4FXU9UlSs3xGZ40wcP1nBjY=
