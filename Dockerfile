@@ -1,6 +1,6 @@
 FROM ghcr.io/caarlos0/svu:3.4.1@sha256:31a5145bfea0392fee47e0689ab391e941ee492f9d73cc06aa69a68008446ca8 AS svu
 
-FROM goreleaser/goreleaser:v2.18.3@sha256:b61a4eedf5e3b1d283792dade34ee0f8c6cce3e6f1f65851d3b397b8f8a75b6d AS goreleaser
+FROM goreleaser/goreleaser:v2.19.0@sha256:b62e651c2fd9e7b1c94133a4e5d131187649e45aeeca137fbf4940f0f654ad08 AS goreleaser
 
 FROM --platform=$BUILDPLATFORM golang:1.27.3-alpine@sha256:b8c9b82affbbb82a020bbcf998dad2ba9516944ac7e883524642a481a9505e9c AS toolchain
 WORKDIR /src
@@ -31,7 +31,7 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH sh scripts/collect-licenses.
     && mkdir -p /out/data /out/config \
     && chmod 0700 /out/data /out/config
 
-FROM alpine:3.22@sha256:2e0b81d60597f449baa56dc25d355367869d2dca4cd57e866f1e2b52af3eb55f
+FROM alpine:3.24@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c0371ea2c9a
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=build /out/repbridge /usr/local/bin/repbridge
 COPY --from=build --chown=65532:65532 /out/data /data
