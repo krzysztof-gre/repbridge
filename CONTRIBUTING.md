@@ -51,8 +51,41 @@ commits, fixtures, screenshots and logs.
   `!` and a `BREAKING CHANGE:` footer.
 
 The squash-merge title controls the next version. Every merge to protected main
-publishes a release after its checks pass. Follow the [release process](README.md#releases);
+publishes a release after its checks pass. Follow the [release process](docs/releases.md);
 policy changes still require explicit owner intent.
+
+### Review and merge responsibilities
+
+The current solo-maintainer ruleset requires a pull request, passing `ci` and
+`security` checks, up-to-date branches and resolved review threads. It requires
+**zero approving reviews** and does not enforce CODEOWNERS approval. CODEOWNERS
+requests the maintainer's attention; it is not an independent-review guarantee.
+The maintainer must inspect external contributions before merging, particularly
+changes to credentials, policies, transports and release workflows. Passing CI
+alone does not establish that a change is safe.
+
+When a second trusted maintainer is available, require at least one approving
+review and code-owner review in the live GitHub ruleset. GitHub does not count
+an author's own review as approval. Keep `.github/rulesets/main.json` aligned
+with the live configuration; editing the JSON file does not apply GitHub settings.
+
+### Commit email privacy
+
+Git commits and squash-merge metadata in this public repository are public.
+Use the exact GitHub `noreply` address shown in your account's email settings
+if you do not want to disclose a personal address. Set it for this checkout with
+`git config --local user.email 'YOUR_GITHUB_NOREPLY_ADDRESS'` before committing,
+and check the author and committer identities with `git show --format=fuller`.
+Also check your GitHub email privacy settings before creating a squash merge.
+New settings do not remove addresses from existing commits, clones or releases;
+do not rewrite published history or immutable release tags as routine cleanup.
+
+### Manual compatibility validation
+
+Use [the operator checklist](docs/manual-validation.md) for release-specific
+sign-in, refresh, client and watch checks. It is a procedure, not a claim that
+those checks passed. Record sanitized outcomes in a release or issue discussion,
+not in committed audit reports; keep account evidence and deployment files private.
 
 ## License and conduct
 

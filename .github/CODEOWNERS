@@ -1,2 +1,3 @@
-# Security-sensitive changes require maintainer review.
+# Request maintainer review; the solo-maintainer ruleset requires checks, not approvals.
+# See CONTRIBUTING.md for the review and merge responsibilities.
 * @krzysztof-gre
