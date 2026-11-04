@@ -235,7 +235,9 @@ func TestReadVaultKeyRequiresPrivateRegular32ByteFile(t *testing.T) {
 	if _, err := readVaultKey(path); err == nil || !strings.Contains(err.Error(), "32 bytes") {
 		t.Fatalf("readVaultKey with short file error = %v", err)
 	}
-	if _, err := readVaultKey(filepath.Join(dir, "missing.key")); err == nil || !strings.Contains(err.Error(), "init-vault-key") {
+	if _, err := readVaultKey(filepath.Join(dir, "missing.key")); err == nil ||
+		!strings.Contains(err.Error(), "restore the original key for an existing vault") ||
+		!strings.Contains(err.Error(), "docker compose -f compose.quickstart.yaml run --build --rm setup init") {
 		t.Fatalf("readVaultKey with missing file error = %v", err)
 	}
 }
