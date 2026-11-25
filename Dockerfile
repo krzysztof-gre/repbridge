@@ -2,7 +2,7 @@ FROM ghcr.io/caarlos0/svu:3.4.1@sha256:31a5145bfea0392fee47e0689ab391e941ee492f9
 
 FROM goreleaser/goreleaser:v2.19.0@sha256:b62e651c2fd9e7b1c94133a4e5d131187649e45aeeca137fbf4940f0f654ad08 AS goreleaser
 
-FROM --platform=$BUILDPLATFORM golang:1.27.3-alpine@sha256:b8c9b82affbbb82a020bbcf998dad2ba9516944ac7e883524642a481a9505e9c AS toolchain
+FROM --platform=$BUILDPLATFORM golang:1.27.4-alpine@sha256:70bd7ddea8b6cbe5d6943cde279d6b67feb10cc924fb9100d1d8757c1575b280 AS toolchain
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
